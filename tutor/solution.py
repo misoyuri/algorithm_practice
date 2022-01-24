@@ -263,24 +263,24 @@ def max_crash_dist(data: SLL) -> int:
 
     target_node = data.head
 
-    perfect_square = []
+    perfect_square_first = None
+    max_length_perfect_square = 0
+    current_length_perfect_square = 0
     
     while target_node is not None:
+        if perfect_square_first is not None:
+            current_length_perfect_square += 1
+                    
         root_num = target_node.val ** 0.5
         if root_num == int(root_num):
-            perfect_square.append(target_node.val)
+            if perfect_square_first is None:
+                perfect_square_first = target_node.val
+            else:
+                max_length_perfect_square = max(max_length_perfect_square, current_length_perfect_square)
+                current_length_perfect_square = 0
+                
                 
         target_node = target_node.next
 
-    perfect_square.sort()
-    
-    if len(perfect_square) < 2:
-        return 0
-    
-    ret = 0
-    
-    for idx in range(1, len(perfect_square)):
-        if ret < perfect_square[idx] - perfect_square[idx - 1]:
-            ret = perfect_square[idx] - perfect_square[idx - 1]
             
-    return ret
+    return max_length_perfect_square
