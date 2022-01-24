@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 from numpy import Inf          # For use in type hinting
-
+import random
 # Type Declarations
 T = TypeVar('T')        # generic type
 SLL = TypeVar('SLL')    # forward declared
@@ -163,19 +163,61 @@ class SinglyLinkedList:
         :return: bool whether or not deleted
         """
         
-    
-                
-
-        pass
-
+        current_node = self.head
+        prev_node = None
+        is_find = False
+        
+        while current_node is not None:
+            if current_node.val == value:
+                is_find = True
+                break
+            else:
+                prev_node = current_node
+                current_node = current_node.next
+        
+        if is_find is False:
+            return False 
+        
+        
+        if prev_node is None:
+            self.head = current_node.next
+            del current_node
+        else:
+            prev_node.next = current_node.next
+            del current_node
+        
+        return True
+            
+        
     def remove_all(self, value: T) -> bool:
         """
         Removes all instances of a node containing `value` from the SLL
         :param value: value to remove
         :return: bool whether any were deleted
         """
-
-        pass
+        
+        current_node = self.head
+        prev_node = None
+        is_find = False
+        
+        while current_node is not None and current_node.val == value:
+            self.head = current_node.next
+            current_node = current_node.next
+            is_find = True
+        
+        while current_node is not None:
+            while current_node is not None and current_node.val != value:
+                prev_node = current_node
+                current_node = current_node.next
+            
+            if current_node is None:
+                break
+            
+            is_find = True            
+            prev_node.next = current_node.next
+            current_node = prev_node.next
+            
+        return is_find
 
     def search(self, value: T) -> bool:
         """
@@ -223,10 +265,8 @@ def max_crash_dist(data: SLL) -> int:
 
     perfect_square = []
     
-    print("*"*30)
     while target_node is not None:
         root_num = target_node.val ** 0.5
-        print(target_node.val)
         if root_num == int(root_num):
             perfect_square.append(target_node.val)
                 
