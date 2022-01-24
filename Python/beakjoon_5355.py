@@ -3,7 +3,8 @@ import sys
 def solve(target, inputs):
     target = float(target)
     
-    print
+    print(target)
+    print(inputs)
     for module in inputs:
         if(module == '@'):
             target *= 3
