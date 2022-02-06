@@ -112,13 +112,12 @@ class SinglyLinkedList:
         
         target_node = self.head
         ret = 0
-        if(target_node is None):
-            return ret
-        else:
-            while target_node is not None:
-                ret += 1
-                target_node = target_node.next
-            return ret
+        
+        while target_node is not None:
+            ret += 1
+            target_node = target_node.next
+            
+        return ret
         
     def sum_list(self) -> T:
         """
