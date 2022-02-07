@@ -217,21 +217,29 @@ class DLL:
         remove a given node
         :param value: node to be removed
         """
+        
         if self.head is None:
             return None
         
-        elif self.head == self.tail:
-            self.head = self.tail = None
-            
-        elif self.head == to_remove:
-            self.pop(False)
+        if self.head == self.tail == to_remove:
+            self.head = None
+            self.tail = None
+            del to_remove
             
         elif self.tail == to_remove:
-            self.pop(True)
+            self.tail.prev.next = self.tail.next
+            self.tail = self.tail.prev
             
+        elif self.head == to_remove:
+            self.head.next.prev = None
+            self.head = self.head.next
+        
         else:
             to_remove.prev.next = to_remove.next
             to_remove.next.prev = to_remove.prev
+            del to_remove
+        
+        self.size -= 1
         
     def remove(self, val: T) -> bool:
         """
@@ -259,15 +267,30 @@ class DLL:
         :return: number of node objects with value removed from doubly linked list
         MUST CALL _REMOVE_NODE
         """
-        removed = 0
-        return removed
+        curr_node = self.head
+        deleted_num = 0
+                
+        while curr_node is not None:
+            if curr_node.value == val:
+                self._remove_node(curr_node)
+                deleted_num += 1
+            
+            curr_node = curr_node.next
+
+        return deleted_num
 
     def reverse(self) -> None:
         """
         reverses doubly linked list in-place
         """
-        pass
 
+        curr_node = self.head
+        
+        while curr_node is not None:
+            curr_node.next, curr_node.prev = curr_node.prev, curr_node.next
+            curr_node = curr_node.prev
+        
+        self.head, self.tail = self.tail, self.head
 
 def secretary_scheduler(dll: DLL) -> DLL:
     """
