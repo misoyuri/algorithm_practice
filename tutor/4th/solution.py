@@ -74,6 +74,7 @@ def insertion_sort(data: List[T], *, comparator: Callable[[T, T], bool] = lambda
             if do_comparison(data[j], data[j-1], comparator, descending):
                 data[j-1], data[j] = data[j], data[j-1]
                 
+                
 
 def hybrid_merge_sort(data: List[T], *, threshold: int = 12,
                       comparator: Callable[[T, T], bool] = lambda x, y: x < y, descending: bool = False) -> None:
@@ -87,54 +88,61 @@ def hybrid_merge_sort(data: List[T], *, threshold: int = 12,
     """
     sorted_list = [0]*len(data)
     
-    def merge(left, mid, right) -> None:
-    
-        i, j, k = left, mid+1, left
+    def merge(left_block, right_block) -> List[T]:
+        if len(left_block) == 0:
+            return right_block
         
-        while(i <= mid and j <= right):
-            if do_comparison(data[i], data[j], comparator, descending):
-                sorted_list[k] = data[i]
-                k += 1
-                i += 1
-            else:
-                sorted_list[k] = data[j]
-                k += 1
-                j += 1
+        if len(right_block) == 0:
+            return left_block
+        
+        merged_block = []
+        
+        left = right = 0
+        
+        while len(merged_block) < len(left_block) + len(right_block):
+            if do_comparison(right_block[right], left_block[left], comparator, descending):
+                merged_block.append(left_block[left])
+                left += 1
                 
-        
-        if i > mid :
-            for l in range(j, right+1):
-                sorted_list[k] = data[l]
-                k += 1
+            else:
+                merged_block.append(right_block[right])
+                right += 1
+            
+            if left == len(left_block):
+                merged_block += right_block[right:]
+                break    
+            
+            if right == len(right_block):
+                merged_block += left_block[left:]
+                break    
 
-        else:
-            for l in range(i, mid+1):
-                sorted_list[k] = data[l]
-                k += 1
+        return merged_block                
 
-        
-        for l in range(left, right+1):
-            data[l] = sorted_list[l]
-        # inner function out        
+    if threshold == 0:
+        threshold = 3
+    n = len(data)
     
-    def sort(left, right):
-        mid = int((left+right) / 2)
-        
-        if right - left + 1 <= threshold:
-            for i in range(left, right+1):
-                for j in range(i, 0, -1):
-                    if do_comparison(data[j], data[j-1], comparator, descending):
-                        data[j-1], data[j] = data[j], data[j-1]
-                        
-        elif left < right:
-            sort(left, mid)
-            sort(mid+1, right)
-            merge(left, mid, right)
-        
-        
+    for k in range(0, n, threshold):
+        # insertion sort
+        for i in range(k+1, min(k + threshold - 1, n - 1)):
+            for j in range(i, k, -1):
+                if do_comparison(data[j], data[j-1], comparator, descending):
+                    data[j-1], data[j] = data[j], data[j-1]
+
     
-    sort(0, len(data)-1)
+    current_block_size = threshold
     
+    while current_block_size < n:
+        for left in range(0, n, current_block_size * 2):
+            mid = left + current_block_size - 1
+            right = min((left + current_block_size * 2 - 1), (n - 1))
+            
+            merged_block = merge(left_block=data[left:mid+1], right_block=data[mid+1:right+1])
+            
+            data[left : left + len(merged_block)] = merged_block
+            
+        current_block_size *= 2
+        
             
 
 # A hybrid quicksort would be even faster but we don't want to give too much code away here!
