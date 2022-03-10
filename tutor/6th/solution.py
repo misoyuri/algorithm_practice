@@ -256,12 +256,13 @@ class HashTable:
                  or refers to HashNode at self.entries[self.indices[i]]
         """
         hash_address = self._hash_1(key)
-        
+       
         # check if aldy exist
-        while (self.indices[hash_address] >= 0):
-            if self.entries[self.indices[hash_address]].key == key:
+        while (self.indices[hash_address] != self.FREE):
+            if self.indices[hash_address] >= 0 and self.entries[self.indices[hash_address]].key == key:
                 return hash_address
-            hash_address = (hash_address + self._hash_2(key)) % self.capacity
+            else:
+                hash_address = (hash_address + self._hash_2(key)) % self.capacity
         
         hash_address = self._hash_1(key)
         if inserting is True:
@@ -271,7 +272,6 @@ class HashTable:
         else:
             while self.indices[hash_address] != -1:
                 hash_address = (hash_address + self._hash_2(key)) % self.capacity
-
         return hash_address
     
     def _insert(self, key: str, value: T) -> None:
@@ -364,7 +364,6 @@ class HashTable:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-
         if self._get(key) is not None:
             self._delete(key)
             
@@ -375,39 +374,74 @@ class HashTable:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        if self._get(key) is not None:
+            return True
+        else:
+            return False
 
     def update(self, pairs: List[Tuple[str, T]]) -> None:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        for node in pairs:
+            key, value = node
+            got_node = self._get(key)
+            if got_node is not None:
+                got_node.value = value
+            else:
+                self._insert(key, value)
 
     def keys(self, reverse: bool = False) -> Generator[str, None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
-
+        
+        if reverse is True:
+            for idx in range(len(self.entries)-1, -1, -1):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].key
+        else:
+            for idx in range(len(self.entries)):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].key      
+            
     def values(self, reverse: bool = False) -> Generator[T, None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        if reverse is True:
+            for idx in range(len(self.entries)-1, -1, -1):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].value
+        else:
+            for idx in range(len(self.entries)):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].value
 
     def items(self, reverse: bool = False) -> Generator[Tuple[str, T], None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        if reverse is True:
+            for idx in range(len(self.entries)-1, -1, -1):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].key, self.entries[idx].value
+        else:
+            for idx in range(len(self.entries)):
+                if self.entries[idx] is not None:
+                    yield self.entries[idx].key, self.entries[idx].value
 
     def clear(self) -> None:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        for key in list(self.keys()):
+            self._delete(key)
 
-
+        
+        self.indices = [self.FREE] * len(self.indices)
+        self.entries = []
+        
 class DiscordDestroyer:
     """
     Implements a DiscordDestroyer post management system.
@@ -440,7 +474,7 @@ class DiscordDestroyer:
         Creates a unique post id for each post.
         DO NOT EDIT.
 
-        Time: O(1)
+        Time: O(1)  
         Space: O(1)
 
         :return: [str] post id for the post.
@@ -457,14 +491,30 @@ class DiscordDestroyer:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        post_id = self.generate_post_id(user, message)
+        id = user + "," + post_id
+        self.posts_by_id[id] = message
+        
+        if user in self.ids_by_user:
+            self.ids_by_user[user][post_id] = id
+        else:
+            self.ids_by_user[user] = HashTable()
+            self.ids_by_user[user][post_id] = id
+        return id
 
     def delete_post(self, user_post_id: str) -> bool:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
-
+        user, post_id = user_post_id.split(",")
+        
+        if user in self.posts_by_id:
+            del self.posts_by_id[user]
+            del self.ids_by_user[user][post_id]
+            return True
+        
+        else:
+            return False
     def get_most_recent_posts(self, v: int) -> Generator[Tuple[str, str], None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
