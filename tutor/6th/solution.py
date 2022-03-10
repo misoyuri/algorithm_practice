@@ -255,15 +255,25 @@ class HashTable:
         :return: int at which self.indices[i] is freed or deleted for insertion,
                  or refers to HashNode at self.entries[self.indices[i]]
         """
-        ret = self._hash_1(key)
+        hash_address = self._hash_1(key)
         
-        if ret is None:
-            ret = self._hash_2(key)
+        # check if aldy exist
+        while (self.indices[hash_address] >= 0):
+            if self.entries[self.indices[hash_address]].key == key:
+                return hash_address
+            hash_address = (hash_address + self._hash_2(key)) % self.capacity
         
+        hash_address = self._hash_1(key)
         if inserting is True:
-            self.entries[ret] 
+            while (self.indices[hash_address] > -1):
+                hash_address = (hash_address + self._hash_2(key)) % self.capacity
         
-        return ret
+        else:
+            while self.indices[hash_address] != -1:
+                hash_address = (hash_address + self._hash_2(key)) % self.capacity
+
+        return hash_address
+    
     def _insert(self, key: str, value: T) -> None:
         """
         Use the key and value parameter to add an entry to the hashtable
@@ -272,27 +282,21 @@ class HashTable:
         :return: None
         """
 
-        
-        hash_address = self._hash_1(key)
+        hash_address = self._hash(key)
         
         if self.indices[hash_address] >= 0:
-            print("indices:", self.indices[hash_address])
             self.entries[self.indices[hash_address]].value = value
         
         else:
-            if self.indices[hash_address] != -1:
-                # hash_address = self._hash_2(key)
-                hash_address += 1
             new_hash = HashNode(key, value)
             self.entries.append(new_hash)
-            self.indices[hash_address] = self.size
-            print("Hash Addr 1:", hash_address)
-            print("Hash Addr 2:", self._hash_2(key))
+            self.indices[hash_address] = len(self.entries) - 1
             
             self.size += 1
         
-            if self.size >= self.capacity / 2:
+            if self.size >= int(self.capacity / 2):
                 self._grow()
+                
         return None
 
     def _get(self, key: str) -> HashNode:
@@ -301,7 +305,12 @@ class HashTable:
         :param key: key we are looking up
         :return: HashNode with the key we looked up
         """
-        pass
+        hash_address = self._hash(key)
+        
+        if self.indices[hash_address] < 0:
+            return None
+        
+        return self.entries[self.indices[hash_address]]
 
     def _delete(self, key: str) -> None:
         """
@@ -309,15 +318,19 @@ class HashTable:
         :param key: key of the Node we are lookng to delete
         :return: None
         """
-        pass
+        hash_address = self._hash(key)
+        
+        self.entries[self.indices[hash_address]] = None
+        self.indices[hash_address] = HashTable.DELETED
+        self.size -= 1
 
     def _grow(self) -> None:
         """
         Double the capacity of the existing hash table
         :return: None
         """
-        self.capacity *= 2
-        new_indices = [self.FREE] * self.capacity
+        self.capacity = self.capacity * 2
+        self.indices = [self.FREE] * self.capacity
         
         i = 0
         while HashTable.PRIMES[i] <= self.capacity:
@@ -325,28 +338,39 @@ class HashTable:
         self.prime_index = i - 1
         
         for idx, hash_node in enumerate(self.entries):
-            new_indices[self._hash_1(hash_node.key)] = idx
+            if hash_node is not None:
+                self.indices[self._hash(hash_node.key)] = idx
             
-        self.indices = new_indices
+        
 
     def __setitem__(self, key: str, value: T) -> None:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
+        self._insert(key, value)
         pass
 
     def __getitem__(self, key: str) -> T:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
-
+        hash_node = self._get(key)
+        if hash_node is not None:
+            return hash_node.value
+        else:
+            raise KeyError()
+        
     def __delitem__(self, key: str) -> None:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
 
+        if self._get(key) is not None:
+            self._delete(key)
+            
+        else:
+            raise KeyError()
+        
     def __contains__(self, key: str) -> bool:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.

@@ -10,120 +10,118 @@ random.seed(331)
 
 class TestHashTable(unittest.TestCase):
 
-    # def test_hash(self):
-    #     # (1) Basic with no double hashing
-    #     table1 = HashTable(capacity=16)
+    def test_hash(self):
+        # (1) Basic with no double hashing
+        table1 = HashTable(capacity=16)
 
-    #     self.assertEqual(4, table1._hash("Ian"))  # 1a
-    #     self.assertEqual(2, table1._hash("Max"))  # 1b
-    #     self.assertEqual(5, table1._hash("Yash"))  # 1c
-    #     self.assertEqual(0, table1._hash("Brandon"))  # 1d
+        self.assertEqual(4, table1._hash("Ian"))  # 1a
+        self.assertEqual(2, table1._hash("Max"))  # 1b
+        self.assertEqual(5, table1._hash("Yash"))  # 1c
+        self.assertEqual(0, table1._hash("Brandon"))  # 1d
 
-    #     # (2) Basic with double hashing with inserting mode only
-    #     table2 = HashTable(capacity=16)
-    #     table2.indices = [HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE, HashTable.FREE,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
-    #     table2.entries = [None, HashNode("H", 100)]
+        # (2) Basic with double hashing with inserting mode only
+        table2 = HashTable(capacity=16)
+        table2.indices = [HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
+                          HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE, HashTable.FREE,
+                          HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
+        table2.entries = [None, HashNode("H", 100)]
 
-    #     self.assertEqual(9, table2._hash("Andrew", inserting=True))  # 2a
-    #     self.assertEqual(5, table2._hash("Andy", inserting=True))  # 2b
-    #     self.assertEqual(15, table2._hash("Lukas", inserting=True))  # 2c
+        self.assertEqual(9, table2._hash("Andrew", inserting=True))  # 2a
+        self.assertEqual(5, table2._hash("Andy", inserting=True))  # 2b
+        self.assertEqual(15, table2._hash("Lukas", inserting=True))  # 2c
 
-    #     # (3) Larger with inserting and not inserting
-    #     table3 = HashTable(capacity=16)
-    #     table3.indices = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.DELETED, HashTable.DELETED,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE]
-    #     table3.entries = [HashNode('class_ever', 1), HashNode('cse331', 100)]
+        # (3) Larger with inserting and not inserting
+        table3 = HashTable(capacity=16)
+        table3.indices = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.DELETED, HashTable.DELETED,
+                          HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
+                          HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE]
+        table3.entries = [HashNode('class_ever', 1), HashNode('cse331', 100)]
 
-    #     # insert in the first available bin
-    #     self.assertEqual(4, table3._hash("is_the", inserting=True))  # 3a
+        # insert in the first available bin
+        self.assertEqual(4, table3._hash("is_the", inserting=True))  # 3a
 
-    #     # search until the first None/unused bin
-    #     self.assertEqual(15, table3._hash("is_the"))  # 3b
+        # search until the first None/unused bin
+        self.assertEqual(15, table3._hash("is_the"))  # 3b
 
-    #     # insert in the first available bin
-    #     self.assertEqual(5, table3._hash("yash", inserting=True))  # 3c
+        # insert in the first available bin
+        self.assertEqual(5, table3._hash("yash", inserting=True))  # 3c
 
-    #     # search until the first None/unused bin
-    #     self.assertEqual(7, table3._hash("yash"))  # 3d
-    #     self.assertEqual(3, table3._hash("class_ever"))  # 3e
+        # search until the first None/unused bin
+        self.assertEqual(7, table3._hash("yash"))  # 3d
+        self.assertEqual(3, table3._hash("class_ever"))  # 3e
 
-    #     # (4) Large Comprehensive
-    #     keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
-    #             "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
-    #     table4 = HashTable(capacity=16)
-    #     table4.indices = [HashTable.FREE, HashTable.FREE, 0, HashTable.FREE, 1, HashTable.DELETED, HashTable.FREE,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
-    #                       HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE]
-    #     table4.entries = [HashNode('Max', 0), HashNode('Ian', 10)]
-    #     expected = [2, 2, 4, 4, 9, 9, 8, 8, 8, 8, 0, 0, 8, 8, 7, 7, 6, 6, 15, 15, 3, 3, 15, 15, 14, 7, 9, 9, 1, 1, 9,
-    #                 9, 0, 0, 5, 8, 15, 15]
+        # (4) Large Comprehensive
+        keys = ["Max", "Ian", "Andrew", "H", "Andy", "Olivia", "Lukas", "Sean", "Angelo", "Jacob", "Zach", "Bank",
+                "Onsay", "Anna", "Zosha", "Scott", "Brandon", "Yash", "Sarah"]
+        table4 = HashTable(capacity=16)
+        table4.indices = [HashTable.FREE, HashTable.FREE, 0, HashTable.FREE, 1, HashTable.DELETED, HashTable.FREE,
+                          HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
+                          HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE]
+        table4.entries = [HashNode('Max', 0), HashNode('Ian', 10)]
+        expected = [2, 2, 4, 4, 9, 9, 8, 8, 8, 8, 0, 0, 8, 8, 7, 7, 6, 6, 15, 15, 3, 3, 15, 15, 14, 7, 9, 9, 1, 1, 9,
+                    9, 0, 0, 5, 8, 15, 15]
 
-    #     for i, key in enumerate(keys):
-    #         # inserts every key in inserting mode and normal mode
-    #         self.assertEqual(expected[2 * i], table4._hash(key, inserting=True))  # 4a
-    #         self.assertEqual(expected[2 * i + 1], table4._hash(key))  # 4b
+        for i, key in enumerate(keys):
+            # inserts every key in inserting mode and normal mode
+            self.assertEqual(expected[2 * i], table4._hash(key, inserting=True))  # 4a
+            self.assertEqual(expected[2 * i + 1], table4._hash(key))  # 4b
 
-    def test_insert(self):
-        # (1) Make sure the hidden _insert method does the proper amount of work (basic)
-        table = HashTable()
-        solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE, 0,
-                    HashTable.FREE]
-        solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005)]
+    # def test_insert(self):
+    #     # (1) Make sure the hidden _insert method does the proper amount of work (basic)
+    #     table = HashTable()
+    #     solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 1, HashTable.FREE, 0,
+    #                 HashTable.FREE]
+    #     solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005)]
 
-        table._insert('cse331', 100)
-        table._insert('is_the', 3005)
+    #     table._insert('cse331', 100)
+    #     table._insert('is_the', 3005)
 
-        self.assertEqual(solution, table.indices)  # 1a
-        self.assertEqual(solution_entries, table.entries)  # 1b
+    #     self.assertEqual(solution, table.indices)  # 1a
+    #     self.assertEqual(solution_entries, table.entries)  # 1b
 
-        # (2) Make sure the hidden _insert method does the proper amount of work (moderate)
-        solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
-                    HashTable.FREE, HashTable.FREE,
-                    HashTable.FREE, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
-        solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005),
-                            HashNode('best', 42), HashNode('class_ever', 1)]
+    #     # (2) Make sure the hidden _insert method does the proper amount of work (moderate)
+    #     solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
+    #                 HashTable.FREE, HashTable.FREE,
+    #                 HashTable.FREE, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
+    #     solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005),
+    #                         HashNode('best', 42), HashNode('class_ever', 1)]
 
-        table._insert('best', 42)
-        table._insert('class_ever', 1)
+    #     table._insert('best', 42)
+    #     table._insert('class_ever', 1)
 
-        self.assertEqual(4, table.size)  # 2a
-        self.assertEqual(16, table.capacity)  # 2b
-        self.assertEqual(solution, table.indices)  # 2c
-        self.assertEqual(solution_entries, table.entries)  # 2d
+    #     self.assertEqual(4, table.size)  # 2a
+    #     self.assertEqual(16, table.capacity)  # 2b
+    #     self.assertEqual(solution, table.indices)  # 2c
+    #     self.assertEqual(solution_entries, table.entries)  # 2d
 
-        # (3) Make sure the hidden _insert method does the proper amount of work (with overwriting)
-        solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
-                    HashTable.FREE, HashTable.FREE,
-                    HashTable.FREE, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
-        solution_entries = [HashNode('cse331', 1), HashNode('is_the', 2),
-                            HashNode('best', 3), HashNode('class_ever', 4)]
+    #     # (3) Make sure the hidden _insert method does the proper amount of work (with overwriting)
+    #     solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
+    #                 HashTable.FREE, HashTable.FREE,
+    #                 HashTable.FREE, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
+    #     solution_entries = [HashNode('cse331', 1), HashNode('is_the', 2),
+    #                         HashNode('best', 3), HashNode('class_ever', 4)]
 
-        table._insert('cse331', 1)
-        table._insert('is_the', 2)
-        table._insert('best', 3)
-        table._insert('class_ever', 4)
-        self.assertEqual(4, table.size)  # 3a
-        self.assertEqual(16, table.capacity)  # 3b
-        self.assertEqual(solution, table.indices)  # 3c
-        self.assertEqual(solution_entries, table.entries)  # 3d
+    #     table._insert('cse331', 1)
+    #     table._insert('is_the', 2)
+    #     table._insert('best', 3)
+    #     table._insert('class_ever', 4)
+    #     self.assertEqual(4, table.size)  # 3a
+    #     self.assertEqual(16, table.capacity)  # 3b
+    #     self.assertEqual(solution, table.indices)  # 3c
+    #     self.assertEqual(solution_entries, table.entries)  # 3d
 
-        # (4) Make sure the hidden _insert method does the proper amount of work (with DELETED)
-        table = HashTable()
-        table.indices[4] = table.indices[6] = HashTable.DELETED
-        solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 1,
-                    HashTable.DELETED, HashTable.FREE, HashTable.DELETED, 0]
-        print("solution:", solution)
-        print("m      y:", table.indices)
-        solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005)]
+    #     # (4) Make sure the hidden _insert method does the proper amount of work (with DELETED)
+    #     table = HashTable()
+    #     table.indices[4] = table.indices[6] = HashTable.DELETED
+    #     solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 1,
+    #                 HashTable.DELETED, HashTable.FREE, HashTable.DELETED, 0]
+    #     solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005)]
 
-        table._insert('cse331', 100)
-        table._insert('is_the', 3005)
+    #     table._insert('cse331', 100)
+    #     table._insert('is_the', 3005)
 
-        self.assertEqual(solution, table.indices)  # 4a
-        self.assertEqual(solution_entries, table.entries)  # 4b
+    #     self.assertEqual(solution, table.indices)  # 4a
+    #     self.assertEqual(solution_entries, table.entries)  # 4b
 
     # def test_get(self):
     #     # (1) Make sure the hidden _get method does the proper amount of work
@@ -165,18 +163,18 @@ class TestHashTable(unittest.TestCase):
     #     self.assertEqual(post_solution_entries, table.entries)  # 1b
     #     self.assertEqual(2, table.size)  # 1c
 
-    def test_len(self):
-        # (1) Empty
-        table = HashTable()
-        self.assertEqual(0, len(table))  # 1a
+    # def test_len(self):
+    #     # (1) Empty
+    #     table = HashTable()
+    #     self.assertEqual(0, len(table))  # 1a
 
-        # (2) Size = 1
-        table.size = 1
-        self.assertEqual(1, len(table))  # 1b
+    #     # (2) Size = 1
+    #     table.size = 1
+    #     self.assertEqual(1, len(table))  # 1b
 
-        # (3) Size = 5
-        table.size = 5
-        self.assertEqual(5, len(table))  # 1c
+    #     # (3) Size = 5
+    #     table.size = 5
+    #     self.assertEqual(5, len(table))  # 1c
 
     # def test_setitem(self):
     #     # (1) Simple without grow
@@ -229,9 +227,11 @@ class TestHashTable(unittest.TestCase):
 
     #     for i, key in enumerate(keys):
     #         table2[key] = vals[i]
-
+            
+        
     #     self.assertEqual(18, table2.size)  # 3a
     #     self.assertEqual(64, table2.capacity)  # 3b
+        
     #     self.assertEqual(solution, table2.indices)  # 3c
     #     self.assertEqual(solution_entries, table2.entries)  # 3d
 
@@ -289,7 +289,6 @@ class TestHashTable(unittest.TestCase):
     #     table2.indices = solution  # set the table so insert does not need to work
     #     table2.entries = solution_entries
     #     table2.size = 18
-
     #     for i, key in enumerate(keys):
     #         self.assertEqual(vals[i], table2[key])  # 3a
 
@@ -297,83 +296,83 @@ class TestHashTable(unittest.TestCase):
     #     with self.assertRaises(KeyError):
     #         _ = table2["Enbody"]  # 4a
 
-    # def test_delitem(self):
-    #     # (1) Basic
-    #     table = HashTable(capacity=16)
-    #     pre_solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, HashTable.FREE, HashTable.FREE, 2, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, 0, HashTable.FREE]
-    #     pre_solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005), HashNode('best', 42),
-    #                             HashNode('class_ever', 1)]
-    #     post_solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, HashTable.DELETED, HashTable.FREE,
-    #                      HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
-    #                      HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
-    #     post_solution_entries = [HashNode('cse331', 100), None, None, HashNode('class_ever', 1)]
+    def test_delitem(self):
+        # (1) Basic
+        table = HashTable(capacity=16)
+        pre_solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, 1, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, HashTable.FREE, HashTable.FREE, 2, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, 0, HashTable.FREE]
+        pre_solution_entries = [HashNode('cse331', 100), HashNode('is_the', 3005), HashNode('best', 42),
+                                HashNode('class_ever', 1)]
+        post_solution = [HashTable.FREE, HashTable.FREE, HashTable.FREE, 3, HashTable.DELETED, HashTable.FREE,
+                         HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED,
+                         HashTable.FREE, HashTable.FREE, HashTable.FREE, 0, HashTable.FREE]
+        post_solution_entries = [HashNode('cse331', 100), None, None, HashNode('class_ever', 1)]
 
-    #     table.indices = pre_solution  # set the table so insert does not need to work
-    #     table.entries = pre_solution_entries
-    #     table.size = 4
+        table.indices = pre_solution  # set the table so insert does not need to work
+        table.entries = pre_solution_entries
+        table.size = 4
 
-    #     delete = ['best', 'is_the']
-    #     for k in delete:
-    #         del table[k]
+        delete = ['best', 'is_the']
+        for k in delete:
+            del table[k]
 
-    #     self.assertEqual(post_solution, table.indices)  # 1a
-    #     self.assertEqual(post_solution_entries, table.entries)  # 1b
-    #     self.assertEqual(2, table.size)  # 1c
+        self.assertEqual(post_solution, table.indices)  # 1a
+        self.assertEqual(post_solution_entries, table.entries)  # 1b
+        self.assertEqual(2, table.size)  # 1c
 
-    #     # (2) Large Comprehensive
-    #     table2 = HashTable(capacity=64)
-    #     keys = "According to all known laws of aviation, there is no way a bee should be able 2 fly".split(' ')
-    #     pre_solution = [15, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 17,
-    #                     HashTable.FREE, 10, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0,
-    #                     HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, 3, HashTable.FREE, HashTable.FREE, 5, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, 12, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
-    #                     HashTable.FREE, 6, HashTable.FREE, HashTable.FREE, HashTable.FREE, 4, HashTable.FREE,
-    #                     HashTable.FREE, HashTable.FREE, 14, 8,
-    #                     HashTable.FREE, 16, 1, HashTable.FREE, 9, HashTable.FREE, 13, 7, HashTable.FREE, 11,
-    #                     HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
-    #     pre_solution_entries = [HashNode("According", 0), HashNode("to", 10), HashNode("all", 20),
-    #                             HashNode("known", 30),
-    #                             HashNode("laws", 40), HashNode("of", 50), HashNode("aviation,", 60),
-    #                             HashNode("there", 70), HashNode("is", 80),
-    #                             HashNode("no", 90), HashNode("way", 100), HashNode("a", 110), HashNode("bee", 120),
-    #                             HashNode("should", 130),
-    #                             HashNode("be", 140), HashNode("able", 150), HashNode("2", 160), HashNode("fly", 170)]
+        # (2) Large Comprehensive
+        table2 = HashTable(capacity=64)
+        keys = "According to all known laws of aviation, there is no way a bee should be able 2 fly".split(' ')
+        pre_solution = [15, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 17,
+                        HashTable.FREE, 10, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 0,
+                        HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, 3, HashTable.FREE, HashTable.FREE, 5, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, 12, 2, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
+                        HashTable.FREE, 6, HashTable.FREE, HashTable.FREE, HashTable.FREE, 4, HashTable.FREE,
+                        HashTable.FREE, HashTable.FREE, 14, 8,
+                        HashTable.FREE, 16, 1, HashTable.FREE, 9, HashTable.FREE, 13, 7, HashTable.FREE, 11,
+                        HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
+        pre_solution_entries = [HashNode("According", 0), HashNode("to", 10), HashNode("all", 20),
+                                HashNode("known", 30),
+                                HashNode("laws", 40), HashNode("of", 50), HashNode("aviation,", 60),
+                                HashNode("there", 70), HashNode("is", 80),
+                                HashNode("no", 90), HashNode("way", 100), HashNode("a", 110), HashNode("bee", 120),
+                                HashNode("should", 130),
+                                HashNode("be", 140), HashNode("able", 150), HashNode("2", 160), HashNode("fly", 170)]
 
-    #     table2.indices = pre_solution  # set the table so insert does not need to work
-    #     table2.entries = pre_solution_entries
-    #     table2.size = 18
+        table2.indices = pre_solution  # set the table so insert does not need to work
+        table2.entries = pre_solution_entries
+        table2.size = 18
 
-    #     solution = [15, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
-    #                 HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 17, HashTable.FREE, 10,
-    #                 HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
-    #                 HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
-    #                 HashTable.DELETED, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
-    #                 HashTable.FREE, HashTable.FREE, 12, HashTable.DELETED, HashTable.FREE, HashTable.FREE,
-    #                 HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE, HashTable.FREE,
-    #                 HashTable.FREE, HashTable.DELETED, HashTable.FREE, HashTable.FREE, HashTable.FREE, 14,
-    #                 HashTable.DELETED, HashTable.FREE,
-    #                 16, HashTable.DELETED, HashTable.FREE, HashTable.DELETED, HashTable.FREE, 13, HashTable.DELETED,
-    #                 HashTable.FREE, 11, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
-    #     solution_entries = [None, None, None, None, None, None, None, None, None, None,
-    #                         HashNode("way", 100), HashNode("a", 110), HashNode("bee", 120), HashNode("should", 130),
-    #                         HashNode("be", 140), HashNode("able", 150), HashNode("2", 160), HashNode("fly", 170)]
+        solution = [15, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
+                    HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, 17, HashTable.FREE, 10,
+                    HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
+                    HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE,
+                    HashTable.DELETED, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE,
+                    HashTable.FREE, HashTable.FREE, 12, HashTable.DELETED, HashTable.FREE, HashTable.FREE,
+                    HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.DELETED, HashTable.FREE, HashTable.FREE,
+                    HashTable.FREE, HashTable.DELETED, HashTable.FREE, HashTable.FREE, HashTable.FREE, 14,
+                    HashTable.DELETED, HashTable.FREE,
+                    16, HashTable.DELETED, HashTable.FREE, HashTable.DELETED, HashTable.FREE, 13, HashTable.DELETED,
+                    HashTable.FREE, 11, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE, HashTable.FREE]
+        solution_entries = [None, None, None, None, None, None, None, None, None, None,
+                            HashNode("way", 100), HashNode("a", 110), HashNode("bee", 120), HashNode("should", 130),
+                            HashNode("be", 140), HashNode("able", 150), HashNode("2", 160), HashNode("fly", 170)]
 
-    #     for i, key in enumerate(keys):
-    #         if i < 10:
-    #             del table2[key]
+        for i, key in enumerate(keys):
+            if i < 10:
+                del table2[key]
 
-    #     self.assertEqual(solution, table2.indices)  # 2a
-    #     self.assertEqual(solution_entries, table2.entries)  # 2b
-    #     self.assertEqual(8, table2.size)  # 2c
+        self.assertEqual(solution, table2.indices)  # 2a
+        self.assertEqual(solution_entries, table2.entries)  # 2b
+        self.assertEqual(8, table2.size)  # 2c
 
-    #     # (3) KeyError Check
-    #     with self.assertRaises(KeyError):
-    #         del table2["Enbody"]  # 3a
-    #     self.assertEqual(8, table2.size)  # 3b
+        # (3) KeyError Check
+        with self.assertRaises(KeyError):
+            del table2["Enbody"]  # 3a
+        self.assertEqual(8, table2.size)  # 3b
 
     # def test_contains(self):
     #     # (1) Not in table
