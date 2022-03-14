@@ -508,21 +508,31 @@ class DiscordDestroyer:
         """
         user, post_id = user_post_id.split(",")
         
-        if user in self.posts_by_id:
-            del self.posts_by_id[user]
+        if user_post_id in self.posts_by_id:
+            del self.posts_by_id[user_post_id]
             del self.ids_by_user[user][post_id]
             return True
         
         else:
             return False
+        
     def get_most_recent_posts(self, v: int) -> Generator[Tuple[str, str], None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        for hash_node in self.posts_by_id.entries[:-(v+1):-1]:
+            user, post_id = hash_node.key.split(",")
+            yield user, self.posts_by_id[hash_node.key]
+
+            
+            
 
     def get_posts_by_user(self, user: str) -> Generator[Tuple[str, str], None, None]:
         """
         DOCSTRING, with function description, complete :param: tags, and a :return: tag.
         """
-        pass
+        print(self.posts_by_id)
+        if user in self.ids_by_user:
+            for node in self.ids_by_user[user].entries:
+                yield user, self.posts_by_id[node.value]
+        
