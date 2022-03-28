@@ -701,8 +701,8 @@ class TestHashTable(unittest.TestCase):
             self.assertEqual(true_post, post)  # 1b
 
 
-        print("ids: ", ids)
-        print(app.ids_by_user)
+        # print("ids: ", ids)
+        # print(app.ids_by_user)
         # (2) Check that all ids are added to self.ids_by_user
         for id in ids:
             user, post_id = id.split(",")
@@ -769,76 +769,77 @@ class TestHashTable(unittest.TestCase):
             # ensure id is not in ids_by_user[user]
             self.assertNotIn(post_id, app.ids_by_user[user])  # 2a
 
-    # def test_application_recent_posts(self):
-    #     app = DiscordDestroyer()
-    #     # consider posts from two users
-    #     users = ["Aaron", "Andrew"]
-    #     # generate 19 random posts
-    #     posts = ["go green", "go white", "go state",
-    #              "cse 331 rocks", "onsay is awesome", "we love python",
-    #              "izzo is a legend", "mel tucker knows how to lead", "deep water", "keep chopping",
-    #              "on the banks", "red cedar", "known to all", "specialty is winning", "spartans play good ball",
-    #              "never beaten", "all through the game they fight", "only colors", "green and white"]
-    #     # create 19 posts, alternating users
-    #     users_posts = [(users[i % 2], posts[i]) for i in range(19)]
-    #     _ = [app.post(users[i % 2], posts[i]) for i in range(19)]
-    #     users_posts_reversed = users_posts[::-1]
+    def test_application_recent_posts(self):
+        app = DiscordDestroyer()
+        # consider posts from two users
+        users = ["Aaron", "Andrew"]
+        # generate 19 random posts
+        posts = ["go green", "go white", "go state",
+                 "cse 331 rocks", "onsay is awesome", "we love python",
+                 "izzo is a legend", "mel tucker knows how to lead", "deep water", "keep chopping",
+                 "on the banks", "red cedar", "known to all", "specialty is winning", "spartans play good ball",
+                 "never beaten", "all through the game they fight", "only colors", "green and white"]
+        # create 19 posts, alternating users
+        users_posts = [(users[i % 2], posts[i]) for i in range(19)]
+        _ = [app.post(users[i % 2], posts[i]) for i in range(19)]
+        users_posts_reversed = users_posts[::-1]
+        
+        # exit(0)
+        # (1) Check that posts are returned in reverse order of insertion
+        for i in range(19):
+            current_posts = users_posts_reversed[:i]
+            for j, user_post_from_generator in enumerate(app.get_most_recent_posts(i)):
+                true_user, true_post = current_posts[j]
+                self.assertEqual((true_user, true_post), user_post_from_generator)  # 1a
 
-    #     # (1) Check that posts are returned in reverse order of insertion
-    #     for i in range(19):
-    #         current_posts = users_posts_reversed[:i]
-    #         for j, user_post_from_generator in enumerate(app.get_most_recent_posts(i)):
-    #             true_user, true_post = current_posts[j]
-    #             self.assertEqual((true_user, true_post), user_post_from_generator)  # 1a
+    def test_application_by_user(self):
+        app = DiscordDestroyer()
+        # consider posts from two users
+        users = ["Aaron", "Andrew"]
+        # generate 19 posts
+        posts = ["go green", "go white", "go state",
+                 "cse 331 rocks", "onsay is awesome", "we love python",
+                 "izzo is a legend", "mel tucker knows how to lead", "deep water", "keep chopping",
+                 "on the banks", "red cedar", "known to all", "specialty is winning", "spartans play good ball",
+                 "never beaten", "all through the game they fight", "only colors", "green and white"]
+        # create 19 posts, alternating users
+        _ = [app.post(users[i % 2], posts[i]) for i in range(19)]
+        aaron_posts = list(zip(cycle(["Aaron"]), posts[::2]))
+        andrew_posts = list(zip(cycle(["Andrew"]), posts[1::2]))
 
-    # def test_application_by_user(self):
-    #     app = DiscordDestroyer()
-    #     # consider posts from two users
-    #     users = ["Aaron", "Andrew"]
-    #     # generate 19 posts
-    #     posts = ["go green", "go white", "go state",
-    #              "cse 331 rocks", "onsay is awesome", "we love python",
-    #              "izzo is a legend", "mel tucker knows how to lead", "deep water", "keep chopping",
-    #              "on the banks", "red cedar", "known to all", "specialty is winning", "spartans play good ball",
-    #              "never beaten", "all through the game they fight", "only colors", "green and white"]
-    #     # create 19 posts, alternating users
-    #     _ = [app.post(users[i % 2], posts[i]) for i in range(19)]
-    #     aaron_posts = list(zip(cycle(["Aaron"]), posts[::2]))
-    #     andrew_posts = list(zip(cycle(["Andrew"]), posts[1::2]))
+        # (1) Check that posts by user are returned
+        # Be careful with time complexity on this one! There's a reason we have the ids_by_user hashtable...
+        self.assertEqual(aaron_posts, list(app.get_posts_by_user("Aaron")))  # 1a
+        self.assertEqual(andrew_posts, list(app.get_posts_by_user("Andrew")))  # 1b
+        self.assertEqual([], list(app.get_posts_by_user("Onsay")))  # 1c
 
-    #     # (1) Check that posts by user are returned
-    #     # Be careful with time complexity on this one! There's a reason we have the ids_by_user hashtable...
-    #     self.assertEqual(aaron_posts, list(app.get_posts_by_user("Aaron")))  # 1a
-    #     self.assertEqual(andrew_posts, list(app.get_posts_by_user("Andrew")))  # 1b
-    #     self.assertEqual([], list(app.get_posts_by_user("Onsay")))  # 1c
+    def test_readme_xml_validity(self):
+        path = "feedback.xml"
+        xml_doc = minidom.parse(path)
+        response = {}
+        tags = ["netid", "feedback", "difficulty", "time", "citations", "type", "number"]
 
-    # def test_readme_xml_validity(self):
-    #     path = "feedback.xml"
-    #     xml_doc = minidom.parse(path)
-    #     response = {}
-    #     tags = ["netid", "feedback", "difficulty", "time", "citations", "type", "number"]
+        # (1) Assert that we can access all tags
+        for tag in tags:
+            raw = xml_doc.getElementsByTagName(tag)[0].firstChild.nodeValue
+            lines = [s.strip() for s in raw.split("\n")]  # If multiple lines, strip each line
+            clean = " ".join(lines).strip()  # Rejoin lines with spaces and strip leading space
+            self.assertNotEqual("REPLACE", clean)  # 1a, Make sure entry was edited
+            response[tag] = clean  # Save each entry
 
-    #     # (1) Assert that we can access all tags
-    #     for tag in tags:
-    #         raw = xml_doc.getElementsByTagName(tag)[0].firstChild.nodeValue
-    #         lines = [s.strip() for s in raw.split("\n")]  # If multiple lines, strip each line
-    #         clean = " ".join(lines).strip()  # Rejoin lines with spaces and strip leading space
-    #         self.assertNotEqual("REPLACE", clean)  # 1a, Make sure entry was edited
-    #         response[tag] = clean  # Save each entry
+        # (2) Assert that difficulty is a float between 0-10
+        difficulty_float = float(response["difficulty"])
+        self.assertGreaterEqual(difficulty_float, 0.0)  # 2a
+        self.assertLessEqual(difficulty_float, 10.0)  # 2b
 
-    #     # (2) Assert that difficulty is a float between 0-10
-    #     difficulty_float = float(response["difficulty"])
-    #     self.assertGreaterEqual(difficulty_float, 0.0)  # 2a
-    #     self.assertLessEqual(difficulty_float, 10.0)  # 2b
+        # (3) Assert that hours is a float between 0-100 (hopefully it didn't take 100 hours!)
+        time_float = float(response["time"])
+        self.assertGreaterEqual(time_float, 0.0)  # 3a
+        self.assertLessEqual(time_float, 100.0)  # 3b
 
-    #     # (3) Assert that hours is a float between 0-100 (hopefully it didn't take 100 hours!)
-    #     time_float = float(response["time"])
-    #     self.assertGreaterEqual(time_float, 0.0)  # 3a
-    #     self.assertLessEqual(time_float, 100.0)  # 3b
-
-    #     # (4) Assert assignment type and number was not changed
-    #     self.assertEqual("Project", response["type"])  # 4a
-    #     self.assertEqual("6", response["number"])  # 4b
+        # (4) Assert assignment type and number was not changed
+        self.assertEqual("Project", response["type"])  # 4a
+        self.assertEqual("6", response["number"])  # 4b
 
 
 if __name__ == '__main__':
