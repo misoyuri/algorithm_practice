@@ -4,9 +4,9 @@ Graph Project Part 1
 """
 
 import math
-import queue
 import time
-import csv
+import queue as q
+import csv 
 from typing import TypeVar, Tuple, List, Set, Dict
 
 import numpy as np
@@ -356,13 +356,45 @@ class Graph:
         INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
         """
         
-        pass
+        if begin_id not in back_edges and end_id not in back_edges:
+            return [], 0
+        
+        path_cost = 0.0
+        path = [end_id]
+        while path[-1] != begin_id:
+            path.append(back_edges[path[-1]])
+            path_cost += self.vertices[path[-1]].adj[path[-2]]
+        path.reverse()
+        return path, path_cost
 
     def bfs(self, begin_id: str, end_id: str) -> Tuple[List[str], float]:
         """
         INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
         """
         pass
+
+        parent = {}
+        node_weight = {begin_id:0}
+        queue = q.SimpleQueue()
+        queue.put(begin_id)
+        while not queue.empty():
+            node = queue.get()
+            if node == end_id:
+                break
+            else:
+                if node in self.vertices and not self.vertices[node].visited:
+                    for adj_vertex in self.vertices[node].adj.keys():
+                        if adj_vertex in node_weight: 
+                            if node_weight[adj_vertex] > node_weight[node] + 1:
+                                node_weight[adj_vertex] = node_weight[node] + 1
+                                parent[adj_vertex] = node
+                        else:
+                            node_weight[adj_vertex] = node_weight[node] + 1
+                            parent[adj_vertex] = node 
+                            
+                        queue.put(adj_vertex)
+                    self.vertices[node].visited = True
+        return self.build_path(parent, begin_id, end_id)
 
     def dfs(self, begin_id: str, end_id: str) -> Tuple[List[str], float]:
         """
@@ -374,7 +406,38 @@ class Graph:
             """
             INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
             """
-            pass
+            best_path = path
+            best_path_cost = 0.0
+            
+            if current_id == end_id:
+                return path, 0
+            
+            if not current_id in self.vertices:
+                return [], 0
+            
+            self.vertices[begin_id].visited = True
+            
+            
+            for adj_vertex in self.vertices[current_id].adj.keys():
+                if self.vertices[adj_vertex].visited == False:
+                    self.vertices[adj_vertex].visited = True
+                    ret_path, path_cost = dfs_inner(adj_vertex, end_id, path+[adj_vertex])
+                    self.vertices[adj_vertex].visited = False
+                    
+                    if len(ret_path) >=2 and ret_path[-1] == end_id:
+                        best_path = ret_path
+                        best_path_cost = path_cost + self.vertices[current_id].adj[adj_vertex]
+            
+            return best_path, best_path_cost
+        
+        best_path, best_cost = dfs_inner(begin_id, end_id, [begin_id])
+        
+        if len(best_path) < 2:
+            return [], 0
+        else:
+            return dfs_inner(begin_id, end_id, [begin_id])
+        
+        
 
         pass
 
@@ -384,14 +447,61 @@ class Graph:
         """
         pass
 
-        def topological_sort_inner(current_id: str) -> None:
+        def topological_sort_inner(current_id: str, stack: list) -> None:
             """
             INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
             """
             pass
+            self.vertices[current_id].visited = True
+
+            for element in self.vertices[current_id].adj.keys():
+
+                if self.vertices[element].visited == False:
+
+                    topological_sort_inner(element ,stack)
+
+            stack.append(current_id)
+            
+            
+        stack =[]
+
+        for element in self.vertices.keys():
+            if self.vertices[element].visited == False:
+
+                topological_sort_inner(element, stack)
+
+        return stack[::-1]
 
     def boss_order_validity(self) -> bool:
         """
         INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
         """
-        pass
+        
+        def is_Ciclic_Graph(curr_vertex, path):
+            self.vertices[curr_vertex].visited = True
+            path[curr_vertex] = True
+    
+            for adjaent_vert in self.vertices[curr_vertex].adj.keys():
+                if self.vertices[adjaent_vert].visited == False:
+                    if is_Ciclic_Graph(adjaent_vert, path) == True:
+                        return True
+                    
+                elif adjaent_vert in path and path[adjaent_vert] == True:
+                    return True
+    
+            path[curr_vertex] = False
+            return False
+            ########################################################
+        
+        if len(self.vertices.keys()) == 1:
+            return False
+        
+        
+        # path: 리컬젼 path 기록
+        path = {}
+        for node in self.vertices.keys():
+            if self.vertices[node].visited == False:
+                if is_Ciclic_Graph(node, path) == True:
+                    return False
+                
+        return True
