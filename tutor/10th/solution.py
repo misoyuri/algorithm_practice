@@ -383,7 +383,6 @@ class Graph:
             current_vertex_dist, current_vertex = heapq.heappop(queue)
             
             if distances[current_vertex] < current_vertex_dist:
-                print("sssssssssssssssssss")
                 continue        
         
             for adj_vertex in self.vertices[current_vertex].adj:
@@ -478,25 +477,73 @@ class Graph:
         """
 
         INSERT DOCSTRINGS HERE -- THEY ARE FOR POINTS
-
-
         HINT:
         Using a priority queue similar to  Dijkstra's
         but storing {cost, coupons used to reach the node, node} rather than just {distance, node}
         since care about both the cost and coupons used
         """
-
+        if start_id not in self.vertices or target_id not in self.vertices:
+            return None, None
+        
         # set up priority queue and dictionary
-
+        tpq = TollWayPriorityQueue()
+        parents = {}
+        
         # initialize dist dictionaries and priority queue
-
+        distances = {}
+        for vertex in self.vertices:
+            distances[vertex] = {}
+            for coupon in range(coupons + 2):
+                distances[vertex][coupon] = float('inf')
+                
+        print(distances)
+        # distances = {vertex: dict() for vertex in self.vertices}
+        # for distance in distances:
+        #     for coupon in range(coupons):
+        #         distance[coupon] = float('inf')
+        distances[start_id] = 0
+        used_coupons = 0
+        
         # initialize algorithm by placing first vertex in priority queue and dictionary
+        queue = []
+        heapq.heappush(queue, [distances[start_id], used_coupons, start_id])
+        
 
-        # perform dijkstra's search and update along the way
-
+        # perform dijkstra's search and update along the way 
+        
+        while queue:
+            current_vertex_dist, current_vertex_coupon, current_vertex = heapq.heappop(queue)
+            
+            for adj_vertex in self.vertices[current_vertex].adj:
+                adj_vert_weight = self.vertices[current_vertex].adj[adj_vertex]
+                
+                if current_vertex_coupon < coupons:
+                    adj_vert_weight_coupon = int(adj_vert_weight / 2)
+                    distance_coupon = current_vertex_dist + adj_vert_weight_coupon
+                    
+                    if distance_coupon < distances[adj_vertex][current_vertex_coupon]:
+                        distances[adj_vertex][current_vertex_coupon+1] = distance_coupon
+                        heapq.heappush(queue, [distance_coupon, current_vertex_coupon + 1, adj_vertex])
+                        parents[adj_vertex] = current_vertex
+                    
+                distance = current_vertex_dist + adj_vert_weight 
+                print()
+                if distance < distances[adj_vertex][current_vertex_coupon]:
+                    distances[adj_vertex][current_vertex_coupon] = distance
+                    heapq.heappush(queue, [distance, coupons - current_vertex_coupon, adj_vertex])
+                    parents[adj_vertex] = current_vertex
+        
+                print("distances[{}]:{} \n current coupon: {}".format(adj_vertex, distances[adj_vertex], current_vertex_coupon))
+        
         # return the min number cost, and coupons used
 
-        pass
+        if distances[target_id] is float('inf') or len(parents) < 1:
+            return None, None
+        
+        print("Path:", self.build_path(parents, start_id, target_id))
+        print(distances[target_id])
+        return min(distances[target_id].values()), coupons
+        
 
     # ============== Don't forget to submit the Writing Assignment PDF to Mimir! :) ==============#
 
@@ -630,6 +677,7 @@ class TollWayPriorityQueue:
         """
         # list is stored by reference, so updating will update all refs
         node = [priority, coupon, next(self.counter), vertex]
+        print("{}, {}".format(vertex.id, coupon))
         self.locator[(vertex.id, coupon)] = node
         heapq.heappush(self.data, node)
 
@@ -644,6 +692,7 @@ class TollWayPriorityQueue:
         while vertex is None:
             # keep popping until we have valid entry
             priority, coupon, count, vertex = heapq.heappop(self.data)
+        print(self.locator)
         del self.locator[(vertex.id, coupon)]  # remove from locator dict
         while len(self.data) > 0 and self.data[0][3] is None:
             heapq.heappop(self.data)  # delete trailing Nones
